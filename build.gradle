@@ -1,9 +1,15 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group = 'org.mergeSort'
 version = '1.0-SNAPSHOT'
+
+
+application {
+    mainClass.set('org.mergeSort.Main') // Specify the main class
+}
 
 repositories {
     mavenCentral()
