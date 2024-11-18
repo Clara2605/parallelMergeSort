@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="com.obiscr.chatgpt.settings.EasyCodeState">
+    <option name="projectFiles" value="$PROJECT_DIR$/src/main/java/org/mergeSort/parallel/MergeSortParallel.java;D:/Anul 2 IS2.1 Semestrul 1/Ingineria sistemelor distribuite/parallelMergeSort/src/main/java/org/mergeSort/sequential/MergeSortSequential.java;D:/Anul 2 IS2.1 Semestrul 1/Ingineria sistemelor distribuite/parallelMergeSort/src/main/java/org/mergeSort/Main.java;D:/Anul 2 IS2.1 Semestrul 1/Ingineria sistemelor distribuite/parallelMergeSort/src/main/java/org/mergeSort/RandomDataGenerator.java" />
+  </component>
+</project>
