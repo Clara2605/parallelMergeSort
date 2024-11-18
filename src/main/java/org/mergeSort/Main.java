@@ -1,7 +1,7 @@
 package org.mergeSort;
 
-import org.mergeSort.sequential.MergeSortSequential;
-import org.mergeSort.parallel.MergeSortParallel;
+import org.mergeSort.metrics.ParallelMetric;
+import org.mergeSort.metrics.SequentialMetric;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.util.concurrent.ForkJoinPool;
 
 public class Main {
 
@@ -37,27 +36,23 @@ public class Main {
         try {
             int[] data = readDataFromFile(fileName);
             System.out.println("Initial Array: " + Arrays.toString(data));
-
             if (choice == 1) {
-                System.out.println("Performing Sequential Merge Sort...");
-                long startTime = System.nanoTime();
-                MergeSortSequential.sort(data);
-                long endTime = System.nanoTime();
-                System.out.println("Sorted Array: " + Arrays.toString(data));
-                System.out.println("Time Taken (Sequential): " + (endTime - startTime) / 1_000_000 + " ms");
+                System.out.println("Executing Sequential Merge Sort...");
+                SequentialMetric sequentialMetric = new SequentialMetric();
+                int[] dataClone = data.clone(); // Clone to preserve the original dataset
+                sequentialMetric.executeSequentialSort(dataClone);
+                sequentialMetric.printMetrics(dataClone);
+                System.out.println("Sorted Array: " + arrayToString(dataClone));
             } else if (choice == 2) {
-                System.out.println("Performing Parallel Merge Sort...");
-                ForkJoinPool pool = new ForkJoinPool();
-                MergeSortParallel task = new MergeSortParallel(data, 0, data.length);
-                long startTime = System.nanoTime();
-                pool.invoke(task);
-                long endTime = System.nanoTime();
-                System.out.println("Sorted Array: " + Arrays.toString(data));
-                System.out.println("Time Taken (Parallel): " + (endTime - startTime) / 1_000_000 + " ms");
+                System.out.println("Executing Parallel Merge Sort...");
+                ParallelMetric parallelMetric = new ParallelMetric();
+                int[] dataClone = data.clone(); // Clone to preserve the original dataset
+                parallelMetric.executeParallelSort(dataClone);
+                parallelMetric.printMetrics(dataClone);
+                System.out.println("Sorted Array: " + arrayToString(dataClone));
             } else {
                 System.out.println("Invalid choice. Exiting.");
             }
-
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
         }
@@ -85,5 +80,17 @@ public class Main {
         return Files.lines(Paths.get(file.getPath()))
                 .mapToInt(Integer::parseInt)
                 .toArray();
+    }
+
+    private static String arrayToString(int[] array) {
+        StringBuilder builder = new StringBuilder("[");
+        for (int i = 0; i < array.length; i++) {
+            builder.append(array[i]);
+            if (i < array.length - 1) {
+                builder.append(", ");
+            }
+        }
+        builder.append("]");
+        return builder.toString();
     }
 }

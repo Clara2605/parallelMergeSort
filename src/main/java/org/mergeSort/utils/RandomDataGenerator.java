@@ -1,4 +1,4 @@
-package org.mergeSort;
+package org.mergeSort.utils;
 
 import java.io.File;
 import java.io.FileWriter;
