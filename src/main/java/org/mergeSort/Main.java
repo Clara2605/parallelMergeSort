@@ -1,14 +1,11 @@
 package org.mergeSort;
 
+import org.mergeSort.metrics.ExcelDataRecorder;
 import org.mergeSort.metrics.ParallelMetric;
 import org.mergeSort.metrics.SequentialMetric;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
 
@@ -35,24 +32,33 @@ public class Main {
 
         try {
             int[] data = readDataFromFile(fileName);
-            System.out.println("Initial Array: " + Arrays.toString(data));
+            System.out.println("Array before sorting: " + arrayToString(data));
+
+            int[] dataClone = data.clone(); // Clone the array for sorting
+            Map<String, Double> metrics;
+
             if (choice == 1) {
                 System.out.println("Executing Sequential Merge Sort...");
                 SequentialMetric sequentialMetric = new SequentialMetric();
-                int[] dataClone = data.clone(); // Clone to preserve the original dataset
-                sequentialMetric.executeSequentialSort(dataClone);
-                sequentialMetric.printMetrics(dataClone);
-                System.out.println("Sorted Array: " + arrayToString(dataClone));
+                metrics = sequentialMetric.executeSequentialSort(dataClone, getDataSize(sizeChoice));
+                displayMetrics("Sequential", metrics);
             } else if (choice == 2) {
                 System.out.println("Executing Parallel Merge Sort...");
                 ParallelMetric parallelMetric = new ParallelMetric();
-                int[] dataClone = data.clone(); // Clone to preserve the original dataset
-                parallelMetric.executeParallelSort(dataClone);
-                parallelMetric.printMetrics(dataClone);
-                System.out.println("Sorted Array: " + arrayToString(dataClone));
+                metrics = parallelMetric.executeParallelSort(dataClone, getDataSize(sizeChoice));
+                displayMetrics("Parallel", metrics);
             } else {
                 System.out.println("Invalid choice. Exiting.");
+                return;
             }
+
+            // Display sorted array
+            System.out.println("Array after sorting: " + arrayToString(dataClone));
+
+            // Save metrics to Excel
+            ExcelDataRecorder.saveMetrics(metrics, "PerformanceMetrics.xlsx");
+            System.out.println("Metrics saved to PerformanceMetrics.xlsx");
+
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
         }
@@ -71,15 +77,34 @@ public class Main {
         }
     }
 
-    private static int[] readDataFromFile(String fileName) throws IOException {
-        File file = new File("src/main/resources/" + fileName);
-        if (!file.exists()) {
-            throw new IOException("File not found: " + fileName);
+    private static int getDataSize(int sizeChoice) {
+        switch (sizeChoice) {
+            case 1:
+                return 1000;
+            case 2:
+                return 10000;
+            case 3:
+                return 100000;
+            default:
+                throw new IllegalArgumentException("Invalid size choice.");
         }
+    }
 
-        return Files.lines(Paths.get(file.getPath()))
+    private static int[] readDataFromFile(String fileName) throws IOException {
+        return java.nio.file.Files.lines(java.nio.file.Paths.get("src/main/resources/" + fileName))
                 .mapToInt(Integer::parseInt)
                 .toArray();
+    }
+
+    private static void displayMetrics(String method, Map<String, Double> metrics) {
+        System.out.println(method + " Sort Metrics:");
+        metrics.forEach((key, value) -> {
+            if (key.contains("Time")) {
+                System.out.printf("%s: %.3f ms%n", key, value);
+            } else if (key.contains("Memory")) {
+                System.out.printf("%s: %.3f KB%n", key, value);
+            }
+        });
     }
 
     private static String arrayToString(int[] array) {

@@ -1,9 +1,28 @@
 package org.mergeSort.metrics;
 
+import org.mergeSort.parallel.MergeSortParallel;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
+
 public class PerformanceMetric {
     private long startTime;
     private long endTime;
     private long memoryUsed;
+
+    public Map<String, Double> executeParallelSort(int[] array, int dataSize) {
+        Map<String, Double> metrics = new HashMap<>();
+        startTimer();
+        calculateMemoryUsage();
+        ForkJoinPool pool = new ForkJoinPool();
+        pool.invoke(new MergeSortParallel(array, 0, array.length));
+        stopTimer();
+
+        metrics.put("Parallel Execution Time (" + dataSize + ")", (double) getExecutionTimeMillis());
+        metrics.put("Parallel Memory Usage (" + dataSize + ")", (double) getMemoryUsedKB());
+        return metrics;
+    }
 
     public void startTimer() {
         Runtime runtime = Runtime.getRuntime();
