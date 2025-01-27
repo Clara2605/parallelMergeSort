@@ -16,12 +16,15 @@ public class SequentialMetric extends PerformanceMetric {
     public Map<String, Double> executeSequentialSort(int[] array, int dataSize) {
         Map<String, Double> metrics = new HashMap<>();
         startTimer();
-        calculateMemoryUsage();
+        //calculateMemoryUsage();
+        startMemoryTracking(); // Start tracking memory usage
         MergeSortSequential.sort(array);
+        stopMemoryTracking();  // Stop tracking memory usage
         stopTimer();
 
-        metrics.put("Sequential Execution Time (" + dataSize + ")", (double) getExecutionTimeMillis());
+        metrics.put("Sequential Execution Time (" + dataSize + ")", getExecutionTimeMillis());
         metrics.put("Sequential Memory Usage (" + dataSize + ")", (double) getMemoryUsedKB());
+
         return metrics;
     }
 

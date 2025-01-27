@@ -8,10 +8,13 @@ public class ParallelMetric extends PerformanceMetric {
 
     public void executeParallelSort(int[] array) {
         startTimer();
-        calculateMemoryUsage();
+        //calculateMemoryUsage();
+        startMemoryTracking(); // Start tracking memory usage
         ForkJoinPool pool = new ForkJoinPool();
         MergeSortParallel task = new MergeSortParallel(array, 0, array.length);
+
         pool.invoke(task);
+        stopMemoryTracking();  // Stop tracking memory usage
         stopTimer();
     }
 
