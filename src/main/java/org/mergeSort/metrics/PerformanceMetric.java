@@ -1,6 +1,5 @@
 package org.mergeSort.metrics;
 
-import org.mergeSort.parallel.MergeSortParallel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,23 +13,11 @@ public class PerformanceMetric {
     private long initialMemory;
     private long finalMemory;
 
-    public Map<String, Double> executeParallelSort(int[] array, int dataSize) {
-        Map<String, Double> metrics = new HashMap<>();
-        startTimer();
-        startMemoryTracking();
-        //calculateMemoryUsage();
-        ForkJoinPool pool = new ForkJoinPool();
-        pool.invoke(new MergeSortParallel(array, 0, array.length));
-        stopTimer();
-        stopMemoryTracking();
-        metrics.put("Parallel Execution Time (" + dataSize + ")", getExecutionTimeMillis());
-        metrics.put("Parallel Memory Usage (" + dataSize + ")", (double) getMemoryUsedKB());
-        return metrics;
-    }
 
     public void startTimer() {
-        Runtime runtime = Runtime.getRuntime();
-        runtime.gc(); // Run garbage collection to minimize memory noise
+        //Runtime runtime = Runtime.getRuntime();
+        //runtime.gc(); // Run garbage collection to minimize memory noise
+        //System.gc();
         startTime = System.nanoTime();
     }
 
@@ -38,17 +25,15 @@ public class PerformanceMetric {
         endTime = System.nanoTime();
     }
 
-//    public void calculateMemoryUsage() {
-//        Runtime runtime = Runtime.getRuntime();
-//        memoryUsed = runtime.totalMemory() - runtime.freeMemory();
-//    }
 
     public double getExecutionTimeMillis() {
         return (endTime - startTime) / 1_000_000.0; // Return as double for precision
     }
 
     public void startMemoryTracking() {
+        //System.gc();
         Runtime runtime = Runtime.getRuntime();
+        //runtime.gc();
         initialMemory = runtime.totalMemory() - runtime.freeMemory();
     }
 
@@ -60,9 +45,16 @@ public class PerformanceMetric {
 
     public long getMemoryUsedKB() {
         return memoryUsed / 1024;
+        //return memoryUsed;
     }
     public long getMemoryUsedBytes() {
         return memoryUsed; // Return memory usage in bytes
+    }
+    public void trackMemoryUsage(String stage) {
+        Runtime runtime = Runtime.getRuntime();
+        long currentMemory = runtime.totalMemory() - runtime.freeMemory();
+        System.out.println("Memory used at stage '" + stage + "': " + (currentMemory / 1024) + " KB");
+
     }
 
 }
